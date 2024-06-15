@@ -1,10 +1,10 @@
 const express = require('express');
-const routes = require('./routes');
+const router = require('./routes/index');
 
 const app = express();
 
 const port = process.env.PORT || 5000;
 
-app.use('/', routes);
+app.use('/', router);
 
 app.listen(port, () => console.log('Server Up'));

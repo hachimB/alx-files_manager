@@ -9,8 +9,8 @@ class AppController {
     });
   }
 
-  static getStats(req, res) {
-    res.status(200).json({ users: db.nbUsers(), files: db.nbFiles() });
+  static async getStats(req, res) {
+    res.status(200).json({ users: await db.nbUsers(), files: await db.nbFiles() });
   }
 }
 
