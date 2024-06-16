@@ -10,13 +10,13 @@ class UsersController {
     if (!password) {
       return res.status(400).send({ error: 'Missing password' });
     }
-    const existingUser = await db.client.db(db.database).collection('users').findOne({ email });
+    const existingUser = db.client.db(db.database).collection('users').findOne({ email });
     if (existingUser) {
       return res.status(400).send({ error: 'Already exist' });
     }
     const hashedPassword = crypto.createHash('sha1').update(password).digest('hex');
 
-    const user = await db.client.db(db.database).collection('users').insertOne({ email, password: hashedPassword });
+    const user = db.client.db(db.database).collection('users').insertOne({ email, password: hashedPassword });
     return res.status(201).send({ id: user.id, email: user.email });
   }
 }
