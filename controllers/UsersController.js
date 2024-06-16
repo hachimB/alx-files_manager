@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const dbClient = require('../utils/db');
+const redisClient = require('../utils/redis');
 
 class UsersController {
   static async postNew(req, res) {
@@ -29,6 +30,22 @@ class UsersController {
       return res.status(500).send({ error: 'Internal Server Error' });
     }
   }
-}
 
+  static async getMe(req, res) {
+    const token = req.headers['x-token'];
+    if (!token) {
+      return res.status(401).send({ error: 'Unauthorized' });
+    }
+    const key = `auth_${token}`;
+    const userId = await redisClient.get(key);
+    if (!userId) {
+      return res.status(401).send({ error: 'Unauthorized' });
+    }
+    const user = await dbClient.client.db(dbClient.database).collection('users').findById(userId);
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+    }
+    return res.status(200).send({ id: user._id, email: user.email });
+  }
+}
 module.exports = UsersController;
