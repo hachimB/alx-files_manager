@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const dbClient = require('../utils/db');
 const redisClient = require('../utils/redis');
+const { ObjectId } = require('../utils/db');
 
 class UsersController {
   static async postNew(req, res) {
@@ -31,6 +32,23 @@ class UsersController {
     }
   }
 
+  // static async getMe(req, res) {
+  //   const token = req.headers['x-token'];
+  //   if (!token) {
+  //     return res.status(401).send({ error: 'Unauthorized' });
+  //   }
+  //   const key = `auth_${token}`;
+  //   const userId = await redisClient.get(key);
+  //   if (!userId) {
+  //     return res.status(401).send({ error: 'Unauthorized' });
+  //   }
+  //   const user = await dbClient.client.db(dbClient.database).collection('users').
+  // findOne({ _id: new dbClient.client.ObjectId(userId) });
+  //   if (!user) {
+  //     return res.status(404).send({ error: 'User not found' });
+  //   }
+  //   return res.status(200).send({ id: user._id, email: user.email });
+  // }
   static async getMe(req, res) {
     const token = req.headers['x-token'];
     if (!token) {
@@ -41,13 +59,16 @@ class UsersController {
     if (!userId) {
       return res.status(401).send({ error: 'Unauthorized' });
     }
-    // const user = await dbClient.client.db(dbClient.database).collection('users')
-    // .findOne({ _id: new dbClient.client.ObjectId(userId) });
-    const user = await dbClient.client.collection('users').findById(userId);
-    if (!user) {
-      return res.status(404).send({ error: 'User not found' });
+    try {
+      const user = await dbClient.client.db(dbClient.database).collection('users')
+        .findOne({ _id: new ObjectId(userId) });
+      if (!user) {
+        return res.status(404).send({ error: 'User not found' });
+      }
+      return res.status(200).send({ id: user._id, email: user.email });
+    } catch (err) {
+      return res.status(500).send({ error: 'Internal Server Error' });
     }
-    return res.status(200).send({ id: user._id, email: user.email });
   }
 }
 module.exports = UsersController;

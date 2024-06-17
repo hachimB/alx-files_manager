@@ -1,4 +1,4 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 class DBClient {
   constructor() {
@@ -30,3 +30,4 @@ class DBClient {
 const dbClient = new DBClient();
 
 module.exports = dbClient;
+module.exports.ObjectId = ObjectId;
