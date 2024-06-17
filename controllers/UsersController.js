@@ -41,11 +41,12 @@ class UsersController {
     if (!userId) {
       return res.status(401).send({ error: 'Unauthorized' });
     }
-    const user = await dbClient.client.db(dbClient.database).collection('users').findOne({ _id: new dbClient.client.ObjectId(userId) });
-    if (!user) {
-      return res.status(404).send({ error: 'User not found' });
-    }
-    return res.status(200).send({ id: user._id, email: user.email });
+    // const user = await dbClient.client.db(dbClient.database).collection('users').
+    // findOne({ _id: new dbClient.client.ObjectId(userId) });
+    // if (!user) {
+    //   return res.status(404).send({ error: 'User not found' });
+    // }
+    return res.status(200).send({ id: userId._id, email: userId.email });
   }
 }
 module.exports = UsersController;
