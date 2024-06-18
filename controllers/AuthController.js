@@ -11,6 +11,9 @@ class AuthController {
     }
     const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString();
     const [email, password] = auth.split(':');
+    if (!email || !password) {
+      return res.status(401).send({ error: 'Unauthorized' });
+    }
     const hashedPassword = crypto.createHash('sha1').update(password).digest('hex');
 
     const user = await dbClient.client.db(dbClient.database).collection('users').findOne({ email, password: hashedPassword });
